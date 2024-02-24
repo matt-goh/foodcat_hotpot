@@ -3,8 +3,6 @@ import "./App.css";
 import "./styles/index.css";
 import LoginForm from "./LoginForm.jsx";
 import TableLayout from "./TableLayout.jsx";
-import DateTimeForm from "./DateTimeForm.jsx";
-import PackageType from "./PackageType.jsx";
 
 function App() {
   return (
@@ -24,13 +22,7 @@ function App() {
         </div>
         <LoginForm />
       </header>
-      <div className="flex mt-12">
-        <TableLayout />
-        <div className="w-3/6 m-4">
-          <DateTimeForm />
-          <PackageType />
-        </div>
-      </div>
+      <TableLayout />
     </>
   );
 }

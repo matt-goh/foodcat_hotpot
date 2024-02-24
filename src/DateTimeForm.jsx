@@ -35,7 +35,7 @@ const DateTimeForm = () => {
   const CustomInput = React.forwardRef(({ value, onClick }, ref) => (
     <button
       ref={ref}
-      className="mt-2 w-full px-3.5 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-300 sm:text-sm transition-all"
+      className="flex items-center justify-center mt-2 w-full px-3.5 py-2 cursor-default border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-300 sm:text-sm transition-all"
       onClick={(e) => {
         onClick(e);
         e.preventDefault();
@@ -46,10 +46,10 @@ const DateTimeForm = () => {
   ));
 
   return (
-    <div className="reletive mt-2">
+    <div>
       <label
         htmlFor="date"
-        className="block text-sm font-medium leading-6 text-gray-900"
+        className="flex items-center justify-center block text-sm font-medium leading-6 text-gray-900"
       >
         Date & Time:
       </label>
