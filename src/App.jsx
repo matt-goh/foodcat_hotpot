@@ -26,10 +26,10 @@ function App() {
       </header>
       <div className="flex mt-12">
         <TableLayout />
-        <form className="w-3/6 m-4" action="index.html" method="POST">
+        <div className="w-3/6 m-4">
           <DateTimeForm />
           <PackageType />
-        </form>
+        </div>
       </div>
     </>
   );

@@ -1,4 +1,3 @@
-import { useState } from "react";
 
 const Table = ({ tableNum, selectedTable, onSelectTable }) => {
   const isSelected = selectedTable === tableNum;
@@ -8,7 +7,7 @@ const Table = ({ tableNum, selectedTable, onSelectTable }) => {
   };
 
   return (
-    <div className="cursor-pointer w-1/12 mx-auto" onClick={handleClick}>
+    <div id="table" className="cursor-pointer w-1/12 mx-auto" onClick={handleClick}>
       <div className="relative">
         <img
           src={`src/assets/dinning-table.png`}

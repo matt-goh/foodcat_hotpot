@@ -11,8 +11,15 @@ const TableLayout = () => {
     );
   };
 
+  const handleLayoutClick = (event) => {
+    // Check if the click occurred outside of any table
+    if (!event.target.closest("#table")) {
+      setSelectedTable(null);
+    }
+  };
+
   return (
-    <div className="border-r-2">
+    <div className="border-r-2" onClick={handleLayoutClick}>
       <div className="flex mt-4">
         <Table
           tableNum={1}
