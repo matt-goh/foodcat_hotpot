@@ -2,11 +2,12 @@ import Table from "./Table";
 import { CSSTransition } from "react-transition-group";
 import DateTimeForm from "./DateTimeForm.jsx";
 import PackageType from "./PackageType.jsx";
-import SelectedTable from "./SelectedTable.jsx";
-import { useState } from "react";
+import PaymentType from "./PaymentType.jsx";
+import { useState, useRef } from "react";
 
 const TableLayout = () => {
   const [selectedTable, setSelectedTable] = useState(null);
+  const nodeRef = useRef(null);
   // const [isSignedIn, setIsSignedIn] = useState(false);
 
   const handleSelectTable = (tableNum) => {
@@ -160,12 +161,13 @@ const TableLayout = () => {
           in={selectedTable !== null}
           timeout={300}
           classNames="fade"
+          nodeRef={nodeRef}
         >
-          <div className="mt-6">
+          <div className="mt-6" ref={nodeRef}>
             {selectedTable && (
               <>
-                <SelectedTable selectedTable={selectedTable} />
-                <PackageType />
+                <PackageType selectedTable={selectedTable} />
+                <PaymentType />
               </>
             )}
           </div>
