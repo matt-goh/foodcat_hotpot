@@ -39,7 +39,7 @@ const FormModal = ({ isOpen, onClose }) => {
             {formType === "Login" ? "Sign In" : "Sign Up"}
           </h2>
         </div>
-
+      {/* testing */}
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <div className="flex mb-3">
             <button
