@@ -1,4 +1,5 @@
 import Table from "./Table";
+import { CSSTransition } from "react-transition-group";
 import DateTimeForm from "./DateTimeForm.jsx";
 import PackageType from "./PackageType.jsx";
 import SelectedTable from "./SelectedTable.jsx";
@@ -6,6 +7,7 @@ import { useState } from "react";
 
 const TableLayout = () => {
   const [selectedTable, setSelectedTable] = useState(null);
+  // const [isSignedIn, setIsSignedIn] = useState(false);
 
   const handleSelectTable = (tableNum) => {
     // Toggle the selected state if the same table is clicked again
@@ -151,15 +153,34 @@ const TableLayout = () => {
         </div>
       </div>
       <div className="w-3/6 m-4">
-        <div className="flex items-center justify-center">
+        <div className="flex items-center justify-center pb-6 border-b-2">
           <DateTimeForm />
         </div>
-        {selectedTable ? (
-          <div className="mt-4">
-            <SelectedTable selectedTable={selectedTable} />
-            <PackageType />
+        <CSSTransition
+          in={selectedTable !== null}
+          timeout={300}
+          classNames="fade"
+        >
+          <div className="mt-6">
+            {selectedTable && (
+              <>
+                <SelectedTable selectedTable={selectedTable} />
+                <PackageType />
+              </>
+            )}
           </div>
-        ) : null}
+        </CSSTransition>
+        {!selectedTable && (
+          <CSSTransition
+            in={selectedTable == null}
+            timeout={300}
+            classNames="fade"
+          >
+            <div className="flex items-center justify-center mt-6 text-base font-semibold leading-7 text-gray-900">
+              Please select a table to reserve.
+            </div>
+          </CSSTransition>
+        )}
       </div>
     </div>
   );

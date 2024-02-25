@@ -11,14 +11,16 @@ function App() {
         <div className="flex items-center">
           <a href="/index.html" className="block w-1/12">
             <img
-              className="w-full h-full"
+              className="w-full h-full block w-1/12"
               src="src\assets\cathotpot.jpg"
               alt="FoodCat Hotpot"
             />
           </a>
-          <h1 className="ml-4 text-2xl font-bold leading-9 tracking-tight">
-            FoodCat Hotpot
-          </h1>
+          <a href="/index.html">
+            <h1 className="ml-4 text-2xl font-bold leading-9 tracking-tight">
+              FoodCat Hotpot
+            </h1>
+          </a>
         </div>
         <LoginForm />
       </header>

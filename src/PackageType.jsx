@@ -7,23 +7,23 @@ const packages = [
     id: 1,
     package: "Exotic Shorthair",
     avatar: "src/assets/exotic-shorthair-cat.png",
-    description: "Wagyu & Seafood & Pork & Chicken",
+    description: "Wagyu, Seafood, Pork and Chicken",
     adultPrice: 79,
     childPrice: 59,
   },
   {
     id: 2,
-    package: "Scottish Fold",
-    avatar: "src/assets/scottish-fold-cat.png",
-    description: "Seafood & Beef & Pork & Chicken",
+    package: "British Shorthair",
+    avatar: "src/assets/british-shorthair-cat.png",
+    description: "Seafood, Beef, Pork and Chicken",
     adultPrice: 59,
     childPrice: 39,
   },
   {
     id: 3,
-    package: "British Shorthair",
-    avatar: "src/assets/british-shorthair-cat.png",
-    description: "Seafood & Pork & Chicken",
+    package: "Scottish Fold",
+    avatar: "src/assets/scottish-fold-cat.png",
+    description: "Seafood, Pork and Chicken",
     adultPrice: 49,
     childPrice: 29,
   },
@@ -34,18 +34,18 @@ function classNames(...classes) {
 }
 
 const PackageType = () => {
-  const [selected, setSelected] = useState(packages[0]);
+  const [selected, setSelected] = useState(packages[1]);
 
   return (
     <Listbox value={selected} onChange={setSelected}>
       {({ open }) => (
         <>
-          <Listbox.Label className="block mt-2 text-sm font-medium leading-6 text-gray-900">
+          <Listbox.Label className="block mt-4 text-sm font-medium leading-6 text-gray-900">
             Package Type:
           </Listbox.Label>
           <div className="relative mt-2">
             <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-300 sm:text-sm sm:leading-6">
-              <span className="flex items-cente">
+              <span className="flex items-center">
                 <img src={selected.avatar} alt="" className="h-5 w-5" />
                 <span className="ml-3 block truncate">{selected.package}</span>
               </span>
@@ -109,6 +109,15 @@ const PackageType = () => {
                 ))}
               </Listbox.Options>
             </Transition>
+          </div>
+          <div className="mt-1 text-sm leading-6 text-gray-900">
+            All you can eat - {selected.description}
+          </div>
+          <div className="text-sm leading-6 text-gray-900">
+            RM {selected.adultPrice} - Adult Price (Over 140cm)
+          </div>
+          <div className="text-sm leading-6 text-gray-900">
+            RM {selected.childPrice} - Child Price (120cm - 140cm)
           </div>
         </>
       )}

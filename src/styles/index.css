@@ -94,3 +94,21 @@ body.modal-open {
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
+.fade-enter {
+  opacity: 0.01;
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transition: opacity 300ms ease-in-out;
+}
+
+.fade-exit {
+  opacity: 1;
+}
+
+.fade-exit-active {
+  opacity: 0.01;
+  transition: opacity 300ms ease-in-out;
+}
