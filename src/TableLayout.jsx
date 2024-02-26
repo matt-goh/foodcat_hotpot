@@ -1,9 +1,10 @@
 import Table from "./Table";
+import { useState, useRef } from "react";
 import { CSSTransition } from "react-transition-group";
 import DateTimeForm from "./DateTimeForm.jsx";
 import PackageType from "./PackageType.jsx";
 import PaymentType from "./PaymentType.jsx";
-import { useState, useRef } from "react";
+import ReserveBtn from "./ReserveBtn.jsx";
 
 const TableLayout = () => {
   const [selectedTable, setSelectedTable] = useState(null);
@@ -168,14 +169,7 @@ const TableLayout = () => {
               <>
                 <PackageType selectedTable={selectedTable} />
                 <PaymentType />
-                <div className="flex justify-center items-center">
-                  <button
-                    onClick={() => setLoginFormOpen(true)}
-                    className="bg-blur bg-orange mt-6 hover:bg-dark-orange text-white text-lg font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline transition-opacity duration-300"
-                  >
-                    Reserve
-                  </button>
-                </div>
+                <ReserveBtn/>
               </>
             )}
           </div>
