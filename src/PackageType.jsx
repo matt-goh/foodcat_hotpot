@@ -50,7 +50,7 @@ const PackageType = ({ selectedTable }) => {
             <span className="text-lg flex items-center justify-center border-b-2 border-orange-100 py-1">
               {`Table ${selectedTable} | ${seatsNum(selectedTable)} people`}
             </span>
-            <span className="text-lg py-1">
+            <span className="py-1">
               {selected.description}
               <br></br>
             </span>
