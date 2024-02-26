@@ -1,10 +1,44 @@
 import React, { useState } from "react";
 import Modal from "react-modal";
 import "./styles/index.css";
+import auth from "./firebase.js";
+import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 
 Modal.setAppElement("#root");
+
 const FormModal = ({ isOpen, onClose }) => {
   const [formType, setFormType] = useState("Login");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [user, setUser] = useState(null);
+  const [otp, setOtp] = useState("");
+
+  const sendOtp = async (phoneNumber) => {
+    try {
+      const formatPhoneNumber = "+60" + phoneNumber;
+      const recaptcha = new RecaptchaVerifier(auth, "recaptcha", {});
+      const confirmation = await signInWithPhoneNumber(
+        auth,
+        formatPhoneNumber,
+        recaptcha
+      );
+      setUser(confirmation);
+    } catch (error) {
+      console.error("Error sending SMS:", error);
+    }
+  };
+
+  const verifyOtp = async () => {
+    try {
+      const data = await user.confirm(otp);
+      console.log("Phone number verified" + ": " + data);
+    } catch (error) {
+      console.error("Error verifying OTP:", error);
+    }
+  };
+
+  const handlePhoneNumberChange = (event) => {
+    setPhoneNumber(event.target.value);
+  };
 
   const handleSignupLinkClick = () => {
     setFormType("Signup");
@@ -19,7 +53,7 @@ const FormModal = ({ isOpen, onClose }) => {
       isOpen={isOpen}
       onRequestClose={onClose}
       overlayClassName="fixed inset-0 bg-gray-500 bg-opacity-75"
-      className="modal-content fixed-center relative z-50 bg-white p-4 rounded-lg shadow-lg"
+      className="modal-content fixed-center relative z-50 bg-white p-5 rounded-lg shadow-lg"
     >
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-4 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -39,7 +73,39 @@ const FormModal = ({ isOpen, onClose }) => {
             {formType === "Login" ? "Sign In" : "Sign Up"}
           </h2>
         </div>
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+        <button className="flex gap-2 justify-center shadow appearance-none border rounded mt-4 w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-1 focus:ring-inset focus:ring-gray-300">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 90 92"
+            fill="none"
+            className="h-[18px] w-[18px]"
+          >
+            <path
+              d="M90 47.1c0-3.1-.3-6.3-.8-9.3H45.9v17.7h24.8c-1 5.7-4.3 10.7-9.2 13.9l14.8 11.5C85 72.8 90 61 90 47.1z"
+              fill="#4280ef"
+            ></path>
+            <path
+              d="M45.9 91.9c12.4 0 22.8-4.1 30.4-11.1L61.5 69.4c-4.1 2.8-9.4 4.4-15.6 4.4-12 0-22.1-8.1-25.8-18.9L4.9 66.6c7.8 15.5 23.6 25.3 41 25.3z"
+              fill="#34a353"
+            ></path>
+            <path
+              d="M20.1 54.8c-1.9-5.7-1.9-11.9 0-17.6L4.9 25.4c-6.5 13-6.5 28.3 0 41.2l15.2-11.8z"
+              fill="#f6b704"
+            ></path>
+            <path
+              d="M45.9 18.3c6.5-.1 12.9 2.4 17.6 6.9L76.6 12C68.3 4.2 57.3 0 45.9.1c-17.4 0-33.2 9.8-41 25.3l15.2 11.8c3.7-10.9 13.8-18.9 25.8-18.9z"
+              fill="#e54335"
+            ></path>
+          </svg>
+          <span className="block text-sm font-medium text-gray-900">
+            Continue with Google
+          </span>
+        </button>
+        <div className="m:mx-auto sm:w-full sm:max-w-sm">
+          <div className="flex w-full items-center gap-2 py-4 text-sm text-gray-700">
+            <div className="h-px w-full bg-gray-300"></div>OR
+            <div className="h-px w-full bg-gray-300"></div>
+          </div>
           <div className="flex mb-3">
             <button
               disabled
@@ -49,27 +115,48 @@ const FormModal = ({ isOpen, onClose }) => {
             </button>
             <input
               id="phoneNumber"
-              type="text"
+              type="int"
               placeholder="Phone number"
+              value={phoneNumber}
+              onChange={handlePhoneNumberChange}
               pattern="\(\d{9}\)"
-              className="shadow appearance-none border rounded w-4/5 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-1 focus:ring-inset focus:ring-gray-400"
+              className="shadow appearance-none border rounded w-4/5 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-1 focus:ring-inset focus:ring-gray-300"
             />
           </div>
-          {formType === "Login" ? (
+          <div className="flex mb-4">
+            <input
+              id="code"
+              type="int"
+              placeholder="6-digit code"
+              onChange={(e) => {
+                setOtp(e.target.value);
+              }}
+              className="shadow appearance-none border rounded w-4/6 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-1 focus:ring-inset focus:ring-gray-300"
+            />
+            <button
+              className="shadow appearance-none border rounded w-2/6 py-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-1 focus:ring-inset focus:ring-gray-300"
+              onClick={() => sendOtp(phoneNumber)}
+              id="codeBtn"
+            >
+              <span className="block text-sm font-medium text-gray-900">
+                Get Code
+              </span>
+            </button>
+          </div>
+          <div className="mb-3.5">
+            <span className="flex text-center justify-center text-xs text-gray-400">
+              By tapping "Get Code", an SMS may be sent. Message & data rates
+              may apply.
+            </span>
+          </div>
+          <div
+            className="flex justify-center items-center mb-3.5 rounded"
+            id="recaptcha"
+          ></div>
+          {/* {formType === "Login" ? (
             ""
           ) : (
             <div className="sm:col-span-4">
-              <div className="mb-4">
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="Email"
-                  autoComplete="email"
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-1 focus:ring-inset focus:ring-gray-400"
-                />
-              </div>
-
               <fieldset className="flex mb-3">
                 <div className="flex items-center gap-x-1">
                   <input
@@ -100,33 +187,28 @@ const FormModal = ({ isOpen, onClose }) => {
                   </label>
                 </div>
               </fieldset>
-              <div className="mb-3">
+              <div className="mb-6">
                 <input
                   id="username"
                   type="username"
                   placeholder="Username"
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-1 focus:ring-inset focus:ring-gray-400"
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-1 focus:ring-inset focus:ring-gray-300"
                 />
               </div>
             </div>
-          )}
-          <div className="mb-6">
-            <input
-              id="password"
-              type="password"
-              placeholder="Password"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-1 focus:ring-inset focus:ring-gray-400"
-            />
-          </div>
+          )} */}
           <div className="flex items-center justify-center">
             <button
               className="bg-orange hover:bg-dark-orange text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-opacity duration-300"
+              id="signInBtn"
               type="button"
+              onClick={verifyOtp}
             >
-              {formType === "Login" ? "Login" : "Register"}
+              Continue
+              {/* {formType === "Login" ? "Login" : "Register"} */}
             </button>
           </div>
-          {formType === "Login" ? (
+          {/* {formType === "Login" ? (
             <span className="text-center block mt-4">
               Don't have an account?{" "}
               <a
@@ -146,7 +228,7 @@ const FormModal = ({ isOpen, onClose }) => {
                 Sign in
               </a>
             </span>
-          )}
+          )} */}
         </div>
       </div>
     </Modal>
