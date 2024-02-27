@@ -7,15 +7,23 @@ import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 Modal.setAppElement("#root");
 
 const FormModal = ({ isOpen, onClose }) => {
-  const [formType, setFormType] = useState("Login");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [user, setUser] = useState(null);
   const [otp, setOtp] = useState("");
+  const [captchaCompleted, setCaptchaCompleted] = useState(false);
+  const [captchaError, setCaptchaError] = useState(false);
 
   const sendOtp = async (phoneNumber) => {
     try {
       const formatPhoneNumber = "+60" + phoneNumber;
-      const recaptcha = new RecaptchaVerifier(auth, "recaptcha", {});
+      const recaptcha = new RecaptchaVerifier(auth, "recaptcha", {
+        callback: () => {
+          setCaptchaCompleted(true);
+          setTimeout(() => {
+            setCaptchaCompleted(false);
+          }, 5000);
+        },
+      });
       const confirmation = await signInWithPhoneNumber(
         auth,
         formatPhoneNumber,
@@ -24,6 +32,10 @@ const FormModal = ({ isOpen, onClose }) => {
       setUser(confirmation);
     } catch (error) {
       console.error("Error sending SMS:", error);
+      setCaptchaError(true);
+      setTimeout(() => {
+        setCaptchaError(false);
+      }, 5000);
     }
   };
 
@@ -38,14 +50,6 @@ const FormModal = ({ isOpen, onClose }) => {
 
   const handlePhoneNumberChange = (event) => {
     setPhoneNumber(event.target.value);
-  };
-
-  const handleSignupLinkClick = () => {
-    setFormType("Signup");
-  };
-
-  const handleLoginLinkClick = () => {
-    setFormType("Login");
   };
 
   return (
@@ -70,7 +74,7 @@ const FormModal = ({ isOpen, onClose }) => {
             alt="FoodCat Hotpot"
           />
           <h2 className="text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-            {formType === "Login" ? "Sign In" : "Sign Up"}
+            Sign In
           </h2>
         </div>
         <button className="flex gap-2 justify-center shadow appearance-none border rounded mt-4 w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-1 focus:ring-inset focus:ring-gray-300">
@@ -137,22 +141,31 @@ const FormModal = ({ isOpen, onClose }) => {
               className="shadow appearance-none border rounded w-2/6 py-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-1 focus:ring-inset focus:ring-gray-300"
               onClick={() => sendOtp(phoneNumber)}
               id="codeBtn"
+              disabled={captchaCompleted ? true : false}
             >
               <span className="block text-sm font-medium text-gray-900">
-                Get Code
+                {captchaCompleted ? "Meow" : "Get Code"}
               </span>
             </button>
           </div>
-          <div className="mb-3.5">
-            <span className="flex text-center justify-center text-xs text-gray-400">
-              By tapping "Get Code", an SMS may be sent. Message & data rates
-              may apply.
-            </span>
-          </div>
-          <div
-            className="flex justify-center items-center mb-3.5 rounded"
-            id="recaptcha"
-          ></div>
+          {!captchaError ? (
+            <div className="mb-3.5">
+              <span className="flex text-center justify-center text-xs text-gray-400">
+                By tapping "Get Code", an SMS may be sent. Message & data rates
+                may apply.
+              </span>
+            </div>
+          ) : (
+            <div className="flex mb-3.5 text-center justify-center text-xs text-red-400">
+              Error sending SMS.
+            </div>
+          )}
+          {!captchaCompleted && (
+            <div
+              className="flex justify-center items-center mb-3.5 rounded"
+              id="recaptcha"
+            ></div>
+          )}
           {/* {formType === "Login" ? (
             ""
           ) : (
@@ -205,30 +218,8 @@ const FormModal = ({ isOpen, onClose }) => {
               onClick={verifyOtp}
             >
               Continue
-              {/* {formType === "Login" ? "Login" : "Register"} */}
             </button>
           </div>
-          {/* {formType === "Login" ? (
-            <span className="text-center block mt-4">
-              Don't have an account?{" "}
-              <a
-                onClick={handleSignupLinkClick}
-                className="text-orange cursor-pointer hover:underline"
-              >
-                Sign up
-              </a>
-            </span>
-          ) : (
-            <span className="text-center block mt-4">
-              Already have an account?{" "}
-              <a
-                onClick={handleLoginLinkClick}
-                className="text-orange cursor-pointer hover:underline"
-              >
-                Sign in
-              </a>
-            </span>
-          )} */}
         </div>
       </div>
     </Modal>
