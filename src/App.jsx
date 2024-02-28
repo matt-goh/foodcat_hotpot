@@ -1,7 +1,7 @@
 import React from "react";
 import "./App.css";
 import "./styles/index.css";
-import LoginForm from "./LoginForm.jsx";
+import UserArea from "./UserArea.jsx";
 import TableLayout from "./TableLayout.jsx";
 
 function App() {
@@ -22,11 +22,11 @@ function App() {
             </h1>
           </a>
         </div>
-        <LoginForm />
+        <UserArea />
       </header>
       <TableLayout />
     </>
   );
-}
+};
 
 export default App;
