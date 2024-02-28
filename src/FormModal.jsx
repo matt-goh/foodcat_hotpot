@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { signInAction, signOutAction } from "./actions.js";
 import Modal from "react-modal";
 import "./styles/index.css";
 import auth from "./firebase.js";
@@ -12,20 +14,21 @@ import {
 Modal.setAppElement("#root");
 
 const FormModal = ({ isOpen, onClose }) => {
+  const dispatch = useDispatch();
+
   const [phoneNumber, setPhoneNumber] = useState("");
   const [user, setUser] = useState(null);
   const [otp, setOtp] = useState("");
   const [captchaCompleted, setCaptchaCompleted] = useState(false);
   const [captchaError, setCaptchaError] = useState(false);
-  const [signInCompleted, setSignInCompleted] = useState(false);
   const [signInDetails, setSignInDetails] = useState([]);
+  const isSignedIn = useSelector((state) => state.isSignedIn);
 
   const googleSignIn = async () => {
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
-      setSignInCompleted(true);
-      setIsSignedIn(true);
+      dispatch(signInAction());
       setSignInDetails([result.user.email, result.user.displayName, "Google"]);
     } catch (e) {
       console.error("Google Sign-In Error:", e);
@@ -63,7 +66,7 @@ const FormModal = ({ isOpen, onClose }) => {
     try {
       const data = await user.confirm(otp);
       console.log("Phone number verified" + ": " + data);
-      setSignInCompleted(true);
+      dispatch(signInAction());
     } catch (error) {
       console.error("Error verifying OTP:", error);
     }
@@ -99,7 +102,7 @@ const FormModal = ({ isOpen, onClose }) => {
             alt="FoodCat Hotpot"
           />
         </div>
-        {!signInCompleted ? (
+        {!isSignedIn ? (
           <>
             <h2 className="text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
               Sign In
@@ -279,7 +282,7 @@ const FormModal = ({ isOpen, onClose }) => {
                   id="username"
                   type="username"
                   value={signInDetails[1]}
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-1 focus:ring-inset focus:ring-gray-300"
+                  className="shadow appearance-none border rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-1 focus:ring-inset focus:ring-gray-300"
                   disabled
                 />
               </div>
