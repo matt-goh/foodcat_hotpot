@@ -1,21 +1,20 @@
-import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { signInAction, signOutAction } from "./actions.js";
+import { React, useState } from "react";
+import { signInAction } from "./actions.js";
 import Modal from "react-modal";
 import "./styles/index.css";
-import auth from "./firebase.js";
 import {
   RecaptchaVerifier,
   signInWithPhoneNumber,
   signInWithPopup,
   GoogleAuthProvider,
 } from "firebase/auth";
+import auth from "./firebase.js";
 
 Modal.setAppElement("#root");
 
 const FormModal = ({ isOpen, onClose }) => {
   const dispatch = useDispatch();
-
   const [phoneNumber, setPhoneNumber] = useState("");
   const [user, setUser] = useState(null);
   const [otp, setOtp] = useState("");
@@ -23,7 +22,7 @@ const FormModal = ({ isOpen, onClose }) => {
   const [captchaError, setCaptchaError] = useState(false);
   const [signInDetails, setSignInDetails] = useState([]);
   const isSignedIn = useSelector((state) => state.isSignedIn);
-
+  
   const googleSignIn = async () => {
     const provider = new GoogleAuthProvider();
     try {
