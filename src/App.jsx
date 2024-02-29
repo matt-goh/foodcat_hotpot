@@ -27,6 +27,6 @@ function App() {
       <TableLayout />
     </>
   );
-};
+}
 
 export default App;

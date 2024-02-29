@@ -28,6 +28,7 @@ const packages = [
     childPrice: 29,
   },
 ];
+
 const seatsNum = (selectedTable) => {
   if (selectedTable >= 6 && selectedTable <= 15) {
     return "2-4";
@@ -47,15 +48,9 @@ const PackageType = ({ selectedTable }) => {
       {({ open }) => (
         <>
           <div className="flex flex-col mt-4 justify-center rounded-md bg-yellow-50 px-4 py-1.5 font-medium text-orange ring-1 shadow-sm ring-inset ring-orange-300">
-            <span className="text-lg flex items-center justify-center border-b-2 border-orange-100 py-1">
+            <span className="text-lg flex items-center justify-center py-1">
               {`Table ${selectedTable} | ${seatsNum(selectedTable)} people`}
             </span>
-            <span className="py-1">
-              {selected.description}
-              <br></br>
-            </span>
-            RM {selected.adultPrice} - Adult Price (Over 140cm)<br></br>RM{" "}
-            {selected.childPrice} - Child Price (120cm - 140cm)
           </div>
           <Listbox.Label className="block mt-4 text-sm font-medium leading-6 text-gray-900">
             Package Type:
@@ -73,7 +68,6 @@ const PackageType = ({ selectedTable }) => {
                 />
               </span>
             </Listbox.Button>
-
             <Transition
               show={open}
               as={Fragment}
@@ -126,6 +120,14 @@ const PackageType = ({ selectedTable }) => {
                 ))}
               </Listbox.Options>
             </Transition>
+            <div className="flex flex-col mt-4 justify-center rounded-md bg-yellow-50 px-4 py-1.5 font-medium text-orange ring-1 shadow-sm ring-inset ring-orange-300">
+              <span className="py-1 border-b-2 border-orange-100">
+                {selected.description}
+                <br></br>
+              </span>
+              RM {selected.adultPrice} - Adult Price (Over 140cm)<br></br>RM{" "}
+              {selected.childPrice} - Child Price (120cm - 140cm)
+            </div>
           </div>
         </>
       )}

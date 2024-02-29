@@ -33,3 +33,4 @@ setPersistence(auth, browserSessionPersistence)
   });
 
 export default auth;
+export { db };

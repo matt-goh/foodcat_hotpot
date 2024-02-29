@@ -1,5 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
-import { React, useState } from "react";
+import { doc, setDoc } from "firebase/firestore";
+import { React, useState, useEffect } from "react";
 import { signInAction } from "./actions.js";
 import Modal from "react-modal";
 import "./styles/index.css";
@@ -10,25 +11,32 @@ import {
   GoogleAuthProvider,
 } from "firebase/auth";
 import auth from "./firebase.js";
+import { db } from "./firebase.js";
 
 Modal.setAppElement("#root");
 
 const FormModal = ({ isOpen, onClose }) => {
   const dispatch = useDispatch();
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [user, setUser] = useState(null);
   const [otp, setOtp] = useState("");
   const [captchaCompleted, setCaptchaCompleted] = useState(false);
   const [captchaError, setCaptchaError] = useState(false);
-  const [signInDetails, setSignInDetails] = useState([]);
+  const [signInMethod, setSignInMethod] = useState("");
   const isSignedIn = useSelector((state) => state.isSignedIn);
-  
+  const [selectedGender, setSelectedGender] = useState(null);
+  const [isSaveButtonDisabled, setIsSaveButtonDisabled] = useState(false);
+
   const googleSignIn = async () => {
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
+      setSignInMethod("Google");
+      setEmail(result.user.email);
+      setUsername(result.user.displayName);
       dispatch(signInAction());
-      setSignInDetails([result.user.email, result.user.displayName, "Google"]);
     } catch (e) {
       console.error("Google Sign-In Error:", e);
     }
@@ -65,20 +73,47 @@ const FormModal = ({ isOpen, onClose }) => {
     try {
       const data = await user.confirm(otp);
       console.log("Phone number verified" + ": " + data);
+      setSignInMethod("Phone Number");
+      setEmail("");
       dispatch(signInAction());
     } catch (error) {
       console.error("Error verifying OTP:", error);
     }
   };
 
+  const handleUsernameChange = (event) => {
+    setUsername(event.target.value);
+  };
+
   const handlePhoneNumberChange = (event) => {
     setPhoneNumber(event.target.value);
   };
 
-  const saveProfile = () => {
-    onClose();
+  const saveProfile = async () => {
+    try {
+      const userProfile = {
+        signInMethod: signInMethod,
+        email: email,
+        phoneNumber: phoneNumber,
+        username: username,
+        gender: document.getElementById("maleRadio").checked
+          ? "Male"
+          : "Female",
+      };
+      await setDoc(doc(db, "users", "/", auth.currentUser.uid), userProfile, {
+        merge: true,
+      });
+      onClose();
+    } catch (error) {
+      console.error("Error saving profile to Firestore:", error);
+    }
   };
+  useEffect(() => {
+    const isMaleChecked = selectedGender === "Male";
+    const isFemaleChecked = selectedGender === "Female";
 
+    setIsSaveButtonDisabled(!isMaleChecked && !isFemaleChecked);
+  }, [selectedGender]);
   return (
     <Modal
       isOpen={isOpen}
@@ -87,14 +122,7 @@ const FormModal = ({ isOpen, onClose }) => {
       className="modal-content fixed-center relative z-50 bg-white p-5 rounded-lg shadow-lg"
     >
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-4 lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-          <button
-            onClick={onClose}
-            className="absolute top-0 right-2 m-4 text-gray-500 cursor-pointer"
-          >
-            X
-          </button>
-
+        <div className="">
           <img
             className="mx-auto h-20 w-auto"
             src="src\assets\cathotpot.jpg"
@@ -216,12 +244,12 @@ const FormModal = ({ isOpen, onClose }) => {
             <h2 className="text-center text-2xl font-bold leading-9 tracking-tight text-gray-900 mb-1">
               Complete Your Profile
             </h2>
-            {signInDetails[2] === "Google" ? (
+            {signInMethod === "Google" ? (
               <div className="flex w-full my-3">
                 <input
                   id="email"
                   type="email"
-                  value={signInDetails[0]}
+                  value={email}
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-1 focus:ring-inset focus:ring-gray-300"
                   disabled
                 />
@@ -244,13 +272,15 @@ const FormModal = ({ isOpen, onClose }) => {
               </div>
             )}
             <div className="sm:col-span-4">
-              <fieldset className="flex mb-3" aria-required>
+              <fieldset className="flex mb-2.5">
                 <div className="flex items-center gap-x-1">
                   <input
                     id="maleRadio"
                     name="genderRadio"
                     type="radio"
                     className=""
+                    checked={selectedGender === "Male"}
+                    onChange={() => setSelectedGender("Male")}
                   />
                   <label
                     htmlFor="maleRadio"
@@ -265,6 +295,8 @@ const FormModal = ({ isOpen, onClose }) => {
                     name="genderRadio"
                     type="radio"
                     className="ml-3"
+                    checked={selectedGender === "Female"}
+                    onChange={() => setSelectedGender("Female")}
                   />
                   <label
                     htmlFor="femaleRadio"
@@ -275,33 +307,23 @@ const FormModal = ({ isOpen, onClose }) => {
                 </div>
               </fieldset>
             </div>
-            {signInDetails[2] === "Google" ? (
-              <div className="mb-6">
-                <input
-                  id="username"
-                  type="username"
-                  value={signInDetails[1]}
-                  className="shadow appearance-none border rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-1 focus:ring-inset focus:ring-gray-300"
-                  disabled
-                />
-              </div>
-            ) : (
-              <div className="mb-6">
-                <input
-                  id="username"
-                  type="username"
-                  placeholder="Username"
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-1 focus:ring-inset focus:ring-gray-300"
-                />
-              </div>
-            )}
+            <div className="mb-6">
+              <input
+                id="username"
+                type="username"
+                placeholder="Username"
+                value={username}
+                onChange={handleUsernameChange}
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-1 focus:ring-inset focus:ring-gray-300"
+              />
+            </div>
 
             <div className="flex items-center justify-center">
               <button
                 className="bg-orange hover:bg-dark-orange text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-opacity duration-300"
                 type="submit"
+                disabled={isSaveButtonDisabled}
                 onClick={saveProfile}
-                aria-required
               >
                 Save
               </button>

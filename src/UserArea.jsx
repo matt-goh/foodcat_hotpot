@@ -1,26 +1,29 @@
-import { useDispatch, useSelector } from "react-redux";
 import { Fragment, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { signOutAction } from "./actions.js";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { useDispatch } from "react-redux";
+import { doc, getDoc } from "firebase/firestore";
 import { signOut } from "firebase/auth";
+import { db } from "./firebase.js";
 import FormModal from "./FormModal";
 import auth from "./firebase.js";
 
 const UserArea = () => {
   const [isSignInFormOpen, setSignInFormOpen] = useState(false);
+  const [username, setUsername] = useState(null);
   const dispatch = useDispatch();
 
   const [userIsSignedIn] = useAuthState(auth);
 
-  if (userIsSignedIn) {
-    // User is signed in
-    console.log("User is signed in:", userIsSignedIn);
-  } else {
-    // User is not signed in
-    console.log("User is not signed in");
-  }
+  // if (userIsSignedIn) {
+  //   // User is signed in
+  //   console.log("User is signed in:", userIsSignedIn);
+  // } else {
+  //   // User is not signed in
+  //   console.log("User is not signed in");
+  // }
 
   const signOutBtn = () => {
     signOut(auth)
@@ -32,6 +35,22 @@ const UserArea = () => {
         console.log("Error signing out: ", error);
       });
   };
+
+  const getUsername = async () => {
+    const docRef = doc(db, "users", auth.currentUser.uid);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      setUsername(docSnap.data().username);
+    } else {
+      console.log("Error retrieving username from database.");
+    }
+  };
+
+  if (userIsSignedIn) {
+    getUsername();
+  }
+
   return (
     <div className="flex items-center">
       {!userIsSignedIn ? (
@@ -45,7 +64,7 @@ const UserArea = () => {
         <Menu as="div" className="relative text-left">
           <div>
             <Menu.Button className="inline-flex w-full justify-center rounded-md bg-orange px-4 py-2 text-m font-bold text-white hover:bg-dark-orange focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75">
-              User
+              {username}
               <ChevronDownIcon
                 className="flex -mr-1 ml-2 h-5 w-5"
                 aria-hidden="true"

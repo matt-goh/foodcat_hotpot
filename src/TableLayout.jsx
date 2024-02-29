@@ -154,7 +154,7 @@ const TableLayout = () => {
           />
         </div>
       </div>
-      <div className="w-4/6 m-4">
+      <div className="2xl:min-w-96 xl:min-w-80 lg:min-w-72 md:min-w-64 sm:min-w-60 m-4 ">
         <div className="flex items-center justify-center pb-6 border-b-2">
           <DateTimeForm />
         </div>
@@ -169,7 +169,7 @@ const TableLayout = () => {
               <>
                 <PackageType selectedTable={selectedTable} />
                 <PaymentType />
-                <ReserveBtn/>
+                <ReserveBtn />
               </>
             )}
           </div>
