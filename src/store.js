@@ -1,11 +1,27 @@
 // store.js
 import { configureStore } from '@reduxjs/toolkit';
 
-const initialState = {
+const initialUserState = {
+  username: "",
+};
+
+const userReducer = (state = initialUserState, action) => {
+  switch (action.type) {
+    case 'SET_USERNAME':
+      return {
+        ...state,
+        username: action.payload,
+      };
+    default:
+      return state;
+  }
+};
+
+const initialAuthState = {
   isSignedIn: false,
 };
 
-const reducer = (state = initialState, action) => {
+const authReducer = (state = initialAuthState, action) => {
   switch (action.type) {
     case 'SIGN_IN':
       return {
@@ -23,7 +39,10 @@ const reducer = (state = initialState, action) => {
 };
 
 const store = configureStore({
-  reducer,
+  reducer: {
+    user: userReducer,
+    auth: authReducer,
+  },
 });
 
 export default store;

@@ -1,9 +1,9 @@
+import { signOutAction, setUsername } from "./actions.js";
+import { useDispatch, useSelector } from "react-redux";
 import { Fragment, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
-import { signOutAction } from "./actions.js";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { useDispatch } from "react-redux";
 import { doc, getDoc } from "firebase/firestore";
 import { signOut } from "firebase/auth";
 import { db } from "./firebase.js";
@@ -12,10 +12,24 @@ import auth from "./firebase.js";
 
 const UserArea = () => {
   const [isSignInFormOpen, setSignInFormOpen] = useState(false);
-  const [username, setUsername] = useState(null);
+  const [userIsSignedIn] = useAuthState(auth);
+  const username = useSelector((state) => state.user.username);
   const dispatch = useDispatch();
 
-  const [userIsSignedIn] = useAuthState(auth);
+  const getUsername = async () => {
+    const docRef = doc(db, "users", auth.currentUser.uid);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      dispatch(setUsername(docSnap.data().username));
+    } else {
+      console.log("Error retrieving username from database.");
+    }
+  };
+
+  if (userIsSignedIn) {
+    getUsername();
+  }
 
   // if (userIsSignedIn) {
   //   // User is signed in
@@ -35,21 +49,6 @@ const UserArea = () => {
         console.log("Error signing out: ", error);
       });
   };
-
-  const getUsername = async () => {
-    const docRef = doc(db, "users", auth.currentUser.uid);
-    const docSnap = await getDoc(docRef);
-
-    if (docSnap.exists()) {
-      setUsername(docSnap.data().username);
-    } else {
-      console.log("Error retrieving username from database.");
-    }
-  };
-
-  if (userIsSignedIn) {
-    getUsername();
-  }
 
   return (
     <div className="flex items-center">

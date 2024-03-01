@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 import { React, useState, useEffect } from "react";
-import { signInAction } from "./actions.js";
+import { signInAction, setUsername } from "./actions.js";
 import Modal from "react-modal";
 import "./styles/index.css";
 import {
@@ -10,24 +10,35 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
 } from "firebase/auth";
-import auth from "./firebase.js";
 import { db } from "./firebase.js";
+import auth from "./firebase.js";
 
 Modal.setAppElement("#root");
 
 const FormModal = ({ isOpen, onClose }) => {
-  const dispatch = useDispatch();
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [user, setUser] = useState(null);
   const [otp, setOtp] = useState("");
   const [captchaCompleted, setCaptchaCompleted] = useState(false);
   const [captchaError, setCaptchaError] = useState(false);
   const [signInMethod, setSignInMethod] = useState("");
-  const isSignedIn = useSelector((state) => state.isSignedIn);
   const [selectedGender, setSelectedGender] = useState(null);
   const [isSaveButtonDisabled, setIsSaveButtonDisabled] = useState(false);
+  const username = useSelector((state) => state.user.username);
+  const isSignedIn = useSelector((state) => state.isSignedIn);
+  const dispatch = useDispatch();
+  
+  const checkIsRegistered = async () => {
+    const docRef = doc(db, "users", auth.currentUser.uid);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      onClose();
+    } else {
+      console.log("User is not registered.");
+    }
+  };
 
   const googleSignIn = async () => {
     const provider = new GoogleAuthProvider();
@@ -35,8 +46,9 @@ const FormModal = ({ isOpen, onClose }) => {
       const result = await signInWithPopup(auth, provider);
       setSignInMethod("Google");
       setEmail(result.user.email);
-      setUsername(result.user.displayName);
+      dispatch(setUsername(result.user.displayName));
       dispatch(signInAction());
+      checkIsRegistered();
     } catch (e) {
       console.error("Google Sign-In Error:", e);
     }
@@ -50,7 +62,7 @@ const FormModal = ({ isOpen, onClose }) => {
           setCaptchaCompleted(true);
           setTimeout(() => {
             setCaptchaCompleted(false);
-          }, 5000);
+          }, 8000);
         },
       });
 
@@ -65,7 +77,7 @@ const FormModal = ({ isOpen, onClose }) => {
       setCaptchaError(true);
       setTimeout(() => {
         setCaptchaError(false);
-      }, 5000);
+      }, 8000);
     }
   };
 
@@ -76,6 +88,7 @@ const FormModal = ({ isOpen, onClose }) => {
       setSignInMethod("Phone Number");
       setEmail("");
       dispatch(signInAction());
+      checkIsRegistered();
     } catch (error) {
       console.error("Error verifying OTP:", error);
     }
@@ -108,12 +121,14 @@ const FormModal = ({ isOpen, onClose }) => {
       console.error("Error saving profile to Firestore:", error);
     }
   };
+  
   useEffect(() => {
     const isMaleChecked = selectedGender === "Male";
     const isFemaleChecked = selectedGender === "Female";
 
     setIsSaveButtonDisabled(!isMaleChecked && !isFemaleChecked);
   }, [selectedGender]);
+
   return (
     <Modal
       isOpen={isOpen}

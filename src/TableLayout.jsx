@@ -1,13 +1,17 @@
-import Table from "./Table";
-import { useState, useRef } from "react";
+import "react-datepicker/dist/react-datepicker.css";
+import React, { useState, useRef } from "react";
 import { CSSTransition } from "react-transition-group";
-import DateTimeForm from "./DateTimeForm.jsx";
+import { useEffect } from "react";
+import { enGB } from "date-fns/locale";
 import PackageType from "./PackageType.jsx";
 import PaymentType from "./PaymentType.jsx";
 import ReserveBtn from "./ReserveBtn.jsx";
+import DatePicker from "react-datepicker";
+import Table from "./Table";
 
 const TableLayout = () => {
   const [selectedTable, setSelectedTable] = useState(null);
+  const [selectedDateTime, setSelectedDateTime] = useState(null);
   const nodeRef = useRef(null);
   // const [isSignedIn, setIsSignedIn] = useState(false);
 
@@ -24,6 +28,45 @@ const TableLayout = () => {
       setSelectedTable(null);
     }
   };
+
+  const generateTimeOptions = () => {
+    const options = [];
+    for (let hour = 18; hour <= 23; hour++) {
+      for (let minute = 0; minute < 60; minute += 30) {
+        const time = new Date();
+        time.setHours(hour);
+        time.setMinutes(minute);
+        options.push(time);
+      }
+    }
+    return options;
+  };
+
+  useEffect(() => {
+    // Set default date and time
+    const initialDateTime = new Date();
+    initialDateTime.setHours(18);
+    initialDateTime.setMinutes(0);
+    setSelectedDateTime(initialDateTime);
+  }, []);
+
+  // Handle date and time change
+  const handleDateTimeChange = (date) => {
+    setSelectedDateTime(date);
+  };
+
+  const CustomInput = React.forwardRef(({ value, onClick }, ref) => (
+    <button
+      ref={ref}
+      className="flex items-center justify-center mt-2 w-full px-3.5 py-2 cursor-default border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-300 sm:text-sm transition-all"
+      onClick={(e) => {
+        onClick(e);
+        e.preventDefault();
+      }}
+    >
+      {value}
+    </button>
+  ));
 
   return (
     <div className="flex mt-12">
@@ -155,8 +198,27 @@ const TableLayout = () => {
         </div>
       </div>
       <div className="2xl:min-w-96 xl:min-w-80 lg:min-w-72 md:min-w-64 sm:min-w-60 m-4 ">
-        <div className="flex items-center justify-center pb-6 border-b-2">
-          <DateTimeForm />
+        <div className="flex flex-col items-center justify-center pb-6 border-b-2">
+          <label
+            htmlFor="date"
+            className="flex items-center justify-center block text-sm font-medium leading-6 text-gray-900"
+          >
+            Date & Time:
+          </label>
+          <DatePicker
+            id="Date"
+            selected={selectedDateTime}
+            closeOnScroll={true}
+            minDate={new Date()}
+            onChange={handleDateTimeChange}
+            dateFormat="yyyy-MM-dd | h:mm aa"
+            timeFormat="h:mm aa"
+            timeIntervals={30}
+            showTimeSelect
+            locale={enGB}
+            includeTimes={generateTimeOptions()}
+            customInput={<CustomInput />}
+          />
         </div>
         <CSSTransition
           in={selectedTable !== null}
@@ -169,7 +231,10 @@ const TableLayout = () => {
               <>
                 <PackageType selectedTable={selectedTable} />
                 <PaymentType />
-                <ReserveBtn />
+                <ReserveBtn
+                  selectedTable={selectedTable}
+                  selectedDateTime={selectedDateTime}
+                />
               </>
             )}
           </div>
