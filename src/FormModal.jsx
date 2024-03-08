@@ -1,7 +1,7 @@
-import { useDispatch, useSelector } from "react-redux";
-import { doc, setDoc, getDoc } from "firebase/firestore";
 import { React, useState, useEffect } from "react";
-import { signInAction, setUsername } from "./actions.js";
+import { useSelector, useDispatch } from "react-redux";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { setUsername } from "./actions";
 import Modal from "react-modal";
 import "./styles/index.css";
 import {
@@ -10,7 +10,6 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
 } from "firebase/auth";
-import { db } from "./firebase.js";
 import auth from "./firebase.js";
 
 Modal.setAppElement("#root");
@@ -25,18 +24,23 @@ const FormModal = ({ isOpen, onClose }) => {
   const [signInMethod, setSignInMethod] = useState("");
   const [selectedGender, setSelectedGender] = useState(null);
   const [isSaveButtonDisabled, setIsSaveButtonDisabled] = useState(false);
+  const [userIsSignedIn] = useAuthState(auth);
   const username = useSelector((state) => state.user.username);
-  const isSignedIn = useSelector((state) => state.isSignedIn);
   const dispatch = useDispatch();
-  
-  const checkIsRegistered = async () => {
-    const docRef = doc(db, "users", auth.currentUser.uid);
-    const docSnap = await getDoc(docRef);
 
-    if (docSnap.exists()) {
-      onClose();
-    } else {
-      console.log("User is not registered.");
+  const checkIsRegistered = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/checkRegistration/${auth.currentUser.uid}`
+      );
+      const data = await response.json();
+      if (data.isRegistered) {
+        onClose();
+      } else {
+        console.log("User is not registered.");
+      }
+    } catch (error) {
+      console.error("Error checking user registration:", error);
     }
   };
 
@@ -47,7 +51,6 @@ const FormModal = ({ isOpen, onClose }) => {
       setSignInMethod("Google");
       setEmail(result.user.email);
       dispatch(setUsername(result.user.displayName));
-      dispatch(signInAction());
       checkIsRegistered();
     } catch (e) {
       console.error("Google Sign-In Error:", e);
@@ -87,7 +90,6 @@ const FormModal = ({ isOpen, onClose }) => {
       console.log("Phone number verified" + ": " + data);
       setSignInMethod("Phone Number");
       setEmail("");
-      dispatch(signInAction());
       checkIsRegistered();
     } catch (error) {
       console.error("Error verifying OTP:", error);
@@ -95,7 +97,7 @@ const FormModal = ({ isOpen, onClose }) => {
   };
 
   const handleUsernameChange = (event) => {
-    setUsername(event.target.value);
+    dispatch(setUsername(event.target.value));
   };
 
   const handlePhoneNumberChange = (event) => {
@@ -105,6 +107,7 @@ const FormModal = ({ isOpen, onClose }) => {
   const saveProfile = async () => {
     try {
       const userProfile = {
+        userId: auth.currentUser.uid,
         signInMethod: signInMethod,
         email: email,
         phoneNumber: phoneNumber,
@@ -113,15 +116,26 @@ const FormModal = ({ isOpen, onClose }) => {
           ? "Male"
           : "Female",
       };
-      await setDoc(doc(db, "users", "/", auth.currentUser.uid), userProfile, {
-        merge: true,
+
+      const response = await fetch("http://localhost:3000/api/saveProfile", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userProfile),
       });
+
+      if (!response.ok) {
+        throw new Error("Error saving user profile");
+      }
       onClose();
+
+      dispatch(setUsername(username));
     } catch (error) {
-      console.error("Error saving profile to Firestore:", error);
+      console.error("Error saving user profile:", error);
     }
   };
-  
+
   useEffect(() => {
     const isMaleChecked = selectedGender === "Male";
     const isFemaleChecked = selectedGender === "Female";
@@ -144,7 +158,7 @@ const FormModal = ({ isOpen, onClose }) => {
             alt="FoodCat Hotpot"
           />
         </div>
-        {!isSignedIn ? (
+        {!userIsSignedIn ? (
           <>
             <h2 className="text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
               Sign In

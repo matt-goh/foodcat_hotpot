@@ -1,25 +1,60 @@
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "./firebase.js";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-const Table = ({ tableNum, selectedTable, onSelectTable }) => {
+const Table = ({
+  tableNum,
+  selectedTable,
+  onSelectTable,
+  selectedDateTime,
+}) => {
   const [isTableReserved, setIsTableReserved] = useState(false);
   const isSelected = selectedTable === tableNum;
 
-  const checkTableReservation = async () => {
-    const docRef = doc(db, "bookings", "Table " + String(tableNum));
-    const docSnap = await getDoc(docRef);
+  const handleClick = () => {
+    onSelectTable(tableNum);
+  };
 
-    if (docSnap.exists()) {
-      setIsTableReserved(docSnap.data().isReserved);
+  const checkTableReservation = async (tableNum, dateTime) => {
+    const userSelectedTime = new Date(dateTime);
+
+    const formattedDate = userSelectedTime
+      .toLocaleDateString()
+      .split("/")
+      .join("-");
+
+    const formattedTime = userSelectedTime.toLocaleTimeString([], {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+
+    const endTime = new Date(userSelectedTime);
+    endTime.setHours(endTime.getHours() + 2);
+
+    const formattedEndTime = endTime.toLocaleTimeString([], {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/reservations?tableNumber=${tableNum}&reservedDate=${formattedDate}&startTime=${formattedTime}&endTime=${formattedEndTime}`
+      );
+
+      if (response.ok) {
+        const reservationData = await response.json();
+        setIsTableReserved(reservationData !== false);
+      } else {
+        throw new Error("Error checking table reservation");
+      }
+    } catch (error) {
+      console.error("Error checking table reservation: ", error);
     }
   };
 
-  checkTableReservation();
-
-  const handleClick = async () => {
-    onSelectTable(tableNum);
-  };
+  useEffect(() => {
+    checkTableReservation(tableNum, selectedDateTime);
+  }, [selectedDateTime]);
 
   return (
     <button

@@ -1,6 +1,8 @@
 import "react-datepicker/dist/react-datepicker.css";
 import React, { useState, useRef } from "react";
 import { CSSTransition } from "react-transition-group";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { useSelector } from "react-redux";
 import { useEffect } from "react";
 import { enGB } from "date-fns/locale";
 import PackageType from "./PackageType.jsx";
@@ -8,12 +10,14 @@ import PaymentType from "./PaymentType.jsx";
 import ReserveBtn from "./ReserveBtn.jsx";
 import DatePicker from "react-datepicker";
 import Table from "./Table";
+import auth from "./firebase.js";
 
 const TableLayout = () => {
-  const [selectedTable, setSelectedTable] = useState(null);
   const [selectedDateTime, setSelectedDateTime] = useState(null);
+  const [selectedTable, setSelectedTable] = useState(null);
+  const [userIsSignedIn] = useAuthState(auth);
   const nodeRef = useRef(null);
-  // const [isSignedIn, setIsSignedIn] = useState(false);
+  const username = useSelector((state) => state.user.username);
 
   const handleSelectTable = (tableNum) => {
     // Toggle the selected state if the same table is clicked again
@@ -76,30 +80,35 @@ const TableLayout = () => {
             tableNum={1}
             selectedTable={selectedTable}
             onSelectTable={handleSelectTable}
+            selectedDateTime={selectedDateTime}
           />
           <div className="border-r-2"></div>
           <Table
             tableNum={2}
             selectedTable={selectedTable}
             onSelectTable={handleSelectTable}
+            selectedDateTime={selectedDateTime}
           />
           <div className="border-r-2"></div>
           <Table
             tableNum={3}
             selectedTable={selectedTable}
             onSelectTable={handleSelectTable}
+            selectedDateTime={selectedDateTime}
           />
           <div className="border-r-2"></div>
           <Table
             tableNum={4}
             selectedTable={selectedTable}
             onSelectTable={handleSelectTable}
+            selectedDateTime={selectedDateTime}
           />
           <div className="border-r-2"></div>
           <Table
             tableNum={5}
             selectedTable={selectedTable}
             onSelectTable={handleSelectTable}
+            selectedDateTime={selectedDateTime}
           />
         </div>
         <div className="flex mt-20">
@@ -107,30 +116,35 @@ const TableLayout = () => {
             tableNum={6}
             selectedTable={selectedTable}
             onSelectTable={handleSelectTable}
+            selectedDateTime={selectedDateTime}
           />
           <div className="border-r-2"></div>
           <Table
             tableNum={7}
             selectedTable={selectedTable}
             onSelectTable={handleSelectTable}
+            selectedDateTime={selectedDateTime}
           />
           <div className="border-r-2"></div>
           <Table
             tableNum={8}
             selectedTable={selectedTable}
             onSelectTable={handleSelectTable}
+            selectedDateTime={selectedDateTime}
           />
           <div className="border-r-2"></div>
           <Table
             tableNum={9}
             selectedTable={selectedTable}
             onSelectTable={handleSelectTable}
+            selectedDateTime={selectedDateTime}
           />
           <div className="border-r-2"></div>
           <Table
             tableNum={10}
             selectedTable={selectedTable}
             onSelectTable={handleSelectTable}
+            selectedDateTime={selectedDateTime}
           />
         </div>
         <div className="border-t-2 ml-4 mr-4"></div>
@@ -139,30 +153,35 @@ const TableLayout = () => {
             tableNum={11}
             selectedTable={selectedTable}
             onSelectTable={handleSelectTable}
+            selectedDateTime={selectedDateTime}
           />
           <div className="border-r-2"></div>
           <Table
             tableNum={12}
             selectedTable={selectedTable}
             onSelectTable={handleSelectTable}
+            selectedDateTime={selectedDateTime}
           />
           <div className="border-r-2"></div>
           <Table
             tableNum={13}
             selectedTable={selectedTable}
             onSelectTable={handleSelectTable}
+            selectedDateTime={selectedDateTime}
           />
           <div className="border-r-2"></div>
           <Table
             tableNum={14}
             selectedTable={selectedTable}
             onSelectTable={handleSelectTable}
+            selectedDateTime={selectedDateTime}
           />
           <div className="border-r-2"></div>
           <Table
             tableNum={15}
             selectedTable={selectedTable}
             onSelectTable={handleSelectTable}
+            selectedDateTime={selectedDateTime}
           />
         </div>
         <div className="flex mt-20 mb-4">
@@ -170,30 +189,35 @@ const TableLayout = () => {
             tableNum={16}
             selectedTable={selectedTable}
             onSelectTable={handleSelectTable}
+            selectedDateTime={selectedDateTime}
           />
           <div className="border-r-2"></div>
           <Table
             tableNum={17}
             selectedTable={selectedTable}
             onSelectTable={handleSelectTable}
+            selectedDateTime={selectedDateTime}
           />
           <div className="border-r-2"></div>
           <Table
             tableNum={18}
             selectedTable={selectedTable}
             onSelectTable={handleSelectTable}
+            selectedDateTime={selectedDateTime}
           />
           <div className="border-r-2"></div>
           <Table
             tableNum={19}
             selectedTable={selectedTable}
             onSelectTable={handleSelectTable}
+            selectedDateTime={selectedDateTime}
           />
           <div className="border-r-2"></div>
           <Table
             tableNum={20}
             selectedTable={selectedTable}
             onSelectTable={handleSelectTable}
+            selectedDateTime={selectedDateTime}
           />
         </div>
       </div>
@@ -234,6 +258,7 @@ const TableLayout = () => {
                 <ReserveBtn
                   selectedTable={selectedTable}
                   selectedDateTime={selectedDateTime}
+                  username={username}
                 />
               </>
             )}
@@ -246,7 +271,9 @@ const TableLayout = () => {
             classNames="fade"
           >
             <div className="flex items-center justify-center mt-6 text-base font-semibold leading-7 text-gray-900">
-              Please select a table to reserve.
+              {userIsSignedIn
+                ? "Please select a table to reserve."
+                : "Please sign in and select a table to reserve."}
             </div>
           </CSSTransition>
         )}

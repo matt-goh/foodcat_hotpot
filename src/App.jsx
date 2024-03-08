@@ -1,8 +1,8 @@
-import React from "react";
-import "./App.css";
-import "./styles/index.css";
-import UserArea from "./UserArea.jsx";
 import TableLayout from "./TableLayout.jsx";
+import UserArea from "./UserArea.jsx";
+import React from "react";
+import "./styles/index.css";
+import "./App.css";
 
 function App() {
   return (

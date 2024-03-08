@@ -1,12 +1,10 @@
-import { signOutAction, setUsername } from "./actions.js";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Fragment, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { setUsername } from "./actions";
 import { signOut } from "firebase/auth";
-import { db } from "./firebase.js";
 import FormModal from "./FormModal";
 import auth from "./firebase.js";
 
@@ -15,34 +13,9 @@ const UserArea = () => {
   const [userIsSignedIn] = useAuthState(auth);
   const username = useSelector((state) => state.user.username);
   const dispatch = useDispatch();
-
-  const getUsername = async () => {
-    const docRef = doc(db, "users", auth.currentUser.uid);
-    const docSnap = await getDoc(docRef);
-
-    if (docSnap.exists()) {
-      dispatch(setUsername(docSnap.data().username));
-    } else {
-      console.log("Error retrieving username from database.");
-    }
-  };
-
-  if (userIsSignedIn) {
-    getUsername();
-  }
-
-  // if (userIsSignedIn) {
-  //   // User is signed in
-  //   console.log("User is signed in:", userIsSignedIn);
-  // } else {
-  //   // User is not signed in
-  //   console.log("User is not signed in");
-  // }
-
   const signOutBtn = () => {
     signOut(auth)
       .then(() => {
-        dispatch(signOutAction());
         console.log("Sign-out successful!");
       })
       .catch((error) => {
@@ -50,6 +23,32 @@ const UserArea = () => {
       });
   };
 
+  const getUsername = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/api/getUsername", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: auth.currentUser.uid,
+        }),
+      });
+
+      const user = await response.json();
+      if (user) {
+        dispatch(setUsername(user.username));
+      } else {
+        console.log("Error retrieving username from database.");
+      }
+    } catch (error) {
+      console.error("Error retrieving username from MongoDB:", error);
+    }
+  };
+
+  if (userIsSignedIn) {
+    getUsername();
+  }
   return (
     <div className="flex items-center">
       {!userIsSignedIn ? (
