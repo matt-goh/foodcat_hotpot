@@ -1,11 +1,11 @@
 import express, { json } from 'express';
 import mongoose from 'mongoose';
-import cors from 'cors'; // You'll need to install cors as well: npm install cors
+import cors from 'cors';
 const app = express();
 
 // MongoDB connection URI
 const uri = 'mongodb://localhost:27017/FoodCat-Hotpot';
-
+const port = 3000;
 // Middleware
 app.use(cors()); // Allow Cross-Origin Resource Sharing (CORS)
 app.use(json()); // Parse JSON request bodies
@@ -88,27 +88,19 @@ app.get('/api/reservations', async (req, res) => {
   const { tableNumber, reservedDate, startTime, endTime } = req.query;
 
   try {
-    const reservations = await Booking.find(
-      {
-        tableNumber: parseInt(tableNumber),
-        reservedDate,
-        $or: [
-          {
-            $and: [
-              { startTime: { $lt: endTime } },
-              { endTime: { $gt: startTime } }
-            ]
-          },
-          {
-            $and: [
-              { startTime: { $lt: endTime } },
-              { endTime: { $gt: startTime } }
-            ]
-          }
-        ]
-      });
+    const reservations = await Booking.find({
+      tableNumber: parseInt(tableNumber),
+      reservedDate,
+      $or: [
+        {
+          startTime: { $lt: endTime },
+          endTime: { $gt: startTime },
+        },
+      ],
+    });
+
     if (reservations.length > 0) {
-      res.json(true);
+      res.json(true); // Send true if there are any reservations for the given time range
     } else {
       res.json(false);
     }
@@ -119,7 +111,7 @@ app.get('/api/reservations', async (req, res) => {
 });
 
 app.post('/api/reserve', async (req, res) => {
-  const { tableNumber, user, reservedDate, startTime, endTime, isReserved } = req.body;
+  const { tableNumber, user, reservedDate, startTime, endTime } = req.body;
 
   try {
     const booking = new Booking({
@@ -139,6 +131,6 @@ app.post('/api/reserve', async (req, res) => {
 });
 
 // Start the server
-app.listen(3000, () => {
-  console.log('Server listening on port 3000');
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
 });

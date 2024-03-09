@@ -208,9 +208,9 @@ const FormModal = ({ isOpen, onClose }) => {
                 </button>
                 <input
                   id="phoneNumber"
-                  type="int"
+                  type="text"
                   placeholder="Phone number"
-                  value={phoneNumber}
+                  value={phoneNumber || ""}
                   onChange={handlePhoneNumberChange}
                   pattern="\(\d{9}\)"
                   className="shadow appearance-none border rounded w-4/5 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-1 focus:ring-inset focus:ring-gray-300"
@@ -219,7 +219,7 @@ const FormModal = ({ isOpen, onClose }) => {
               <div className="flex mb-4">
                 <input
                   id="code"
-                  type="int"
+                  type="text"
                   placeholder="6-digit code"
                   onChange={(e) => {
                     setOtp(e.target.value);
@@ -261,7 +261,7 @@ const FormModal = ({ isOpen, onClose }) => {
                   className="bg-orange hover:bg-dark-orange text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-opacity duration-300"
                   id="signInBtn"
                   type="button"
-                  onClick={verifyOtp}
+                  onClick={() => verifyOtp()}
                 >
                   Continue
                 </button>
@@ -294,7 +294,7 @@ const FormModal = ({ isOpen, onClose }) => {
                 <input
                   id="phoneNumber"
                   type="int"
-                  value={phoneNumber}
+                  value={phoneNumber || ""}
                   className="shadow appearance-none border rounded w-4/5 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-1 focus:ring-inset focus:ring-gray-300"
                   disabled
                 />
@@ -307,7 +307,6 @@ const FormModal = ({ isOpen, onClose }) => {
                     id="maleRadio"
                     name="genderRadio"
                     type="radio"
-                    className=""
                     checked={selectedGender === "Male"}
                     onChange={() => setSelectedGender("Male")}
                   />

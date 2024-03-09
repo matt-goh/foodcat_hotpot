@@ -3,7 +3,11 @@ import { useSelector } from "react-redux";
 import auth from "./firebase.js";
 import React from "react";
 
-const ReserveBtn = ({ selectedTable, selectedDateTime }) => {
+const ReserveBtn = ({
+  selectedTable,
+  selectedDateTime,
+  checkAllTablesReservation,
+}) => {
   const [userIsSignedIn] = useAuthState(auth);
   const username = useSelector((state) => state.user.username);
 
@@ -16,9 +20,9 @@ const ReserveBtn = ({ selectedTable, selectedDateTime }) => {
       .join("-");
 
     const formattedTime = userSelectedTime.toLocaleTimeString([], {
-      hour: "numeric",
+      hour: "2-digit",
       minute: "2-digit",
-      hour12: true,
+      hour12: false,
     });
 
     const endTime = new Date(userSelectedTime);
@@ -26,9 +30,9 @@ const ReserveBtn = ({ selectedTable, selectedDateTime }) => {
     endTime.setHours(endTime.getHours() + 2);
 
     const formattedEndTime = endTime.toLocaleTimeString([], {
-      hour: "numeric",
+      hour: "2-digit",
       minute: "2-digit",
-      hour12: true,
+      hour12: false,
     });
 
     try {
@@ -37,7 +41,7 @@ const ReserveBtn = ({ selectedTable, selectedDateTime }) => {
         user: username,
         reservedDate: formattedDate,
         startTime: formattedTime,
-        endTime: formattedEndTime, // Assuming a reservation is for 2 hours
+        endTime: formattedEndTime,
       };
 
       const response = await fetch("http://localhost:3000/api/reserve", {
@@ -57,6 +61,8 @@ const ReserveBtn = ({ selectedTable, selectedDateTime }) => {
       console.log(
         `Table ${table} reserved from ${formattedTime} to ${formattedEndTime} on ${formattedDate} by ${username}`
       );
+
+      await checkAllTablesReservation();
     } catch (error) {
       console.error("Error reserving table: ", error);
     }
