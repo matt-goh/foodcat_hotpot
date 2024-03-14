@@ -5,10 +5,12 @@ import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { setUsername } from "./actions";
 import { signOut } from "firebase/auth";
+import BookingModal from "./ManageBookings.jsx";
 import FormModal from "./FormModal";
 import auth from "./firebase.js";
 
-const UserArea = () => {
+const UserArea = ({ checkAllTablesReservation, selectedDateTime }) => {
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [isSignInFormOpen, setSignInFormOpen] = useState(false);
   const [userIsSignedIn] = useAuthState(auth);
   const username = useSelector((state) => state.user.username);
@@ -89,6 +91,7 @@ const UserArea = () => {
                       className={`${
                         active ? "bg-orange text-white" : "text-gray-900"
                       } group flex w-full items-center rounded-md px-3 py-2 text-sm`}
+                      onClick={() => setIsBookingModalOpen(true)}
                     >
                       Manage Bookings
                     </button>
@@ -116,6 +119,13 @@ const UserArea = () => {
         isOpen={isSignInFormOpen}
         onClose={() => setSignInFormOpen(false)}
       ></FormModal>
+
+      <BookingModal
+        isOpen={isBookingModalOpen}
+        onClose={() => setIsBookingModalOpen(false)}
+        checkAllTablesReservation={checkAllTablesReservation}
+        selectedDateTime={selectedDateTime}
+      />
     </div>
   );
 };

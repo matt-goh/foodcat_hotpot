@@ -1,17 +1,28 @@
+import ReservationSuccessModal from "./ReservationSuccessModal";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useSelector } from "react-redux";
 import auth from "./firebase.js";
-import React from "react";
+import React, { useState } from "react";
 
 const ReserveBtn = ({
   selectedTable,
   selectedDateTime,
+  selectedPackage,
+  selectedPayment,
   checkAllTablesReservation,
+  resetSelectedTable,
 }) => {
   const [userIsSignedIn] = useAuthState(auth);
   const username = useSelector((state) => state.user.username);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [reservationDetails, setReservationDetails] = useState(null);
 
-  const reserveTable = async (table, dateTime) => {
+  const reserveTable = async (
+    table,
+    dateTime,
+    selectedPackage,
+    selectedPayment
+  ) => {
     const userSelectedTime = new Date(dateTime);
 
     const formattedDate = userSelectedTime
@@ -42,6 +53,8 @@ const ReserveBtn = ({
         reservedDate: formattedDate,
         startTime: formattedTime,
         endTime: formattedEndTime,
+        selectedPackage: selectedPackage,
+        selectedPayment: selectedPayment,
       };
 
       const response = await fetch("http://localhost:3000/api/reserve", {
@@ -61,11 +74,20 @@ const ReserveBtn = ({
       console.log(
         `Table ${table} reserved from ${formattedTime} to ${formattedEndTime} on ${formattedDate} by ${username}`
       );
+      // Show the success modal and set the reservation details
+      setShowSuccessModal(true);
+      setReservationDetails(requestBody);
 
-      await checkAllTablesReservation();
+      await checkAllTablesReservation(dateTime);
     } catch (error) {
       console.error("Error reserving table: ", error);
     }
+  };
+
+  const handleCloseSuccessModal = async () => {
+    setShowSuccessModal(false);
+    setReservationDetails(null);
+    await resetSelectedTable(null);
   };
 
   return (
@@ -75,11 +97,21 @@ const ReserveBtn = ({
         onClick={() =>
           !userIsSignedIn
             ? alert("Please sign in first.")
-            : reserveTable(selectedTable, selectedDateTime)
+            : reserveTable(
+                selectedTable,
+                selectedDateTime,
+                selectedPackage,
+                selectedPayment
+              )
         }
       >
         Reserve
       </button>
+      <ReservationSuccessModal
+        isOpen={showSuccessModal}
+        onClose={handleCloseSuccessModal}
+        reservationDetails={reservationDetails}
+      />
     </div>
   );
 };

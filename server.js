@@ -77,7 +77,8 @@ const bookingSchema = new mongoose.Schema({
   reservedDate: String,
   startTime: String,
   endTime: String,
-  // Add other booking properties as needed
+  selectedPackage: String,
+  selectedPayment: String,
 });
 
 const Booking = mongoose.model('Booking', bookingSchema);
@@ -111,7 +112,7 @@ app.get('/api/reservations', async (req, res) => {
 });
 
 app.post('/api/reserve', async (req, res) => {
-  const { tableNumber, user, reservedDate, startTime, endTime } = req.body;
+  const { tableNumber, user, reservedDate, startTime, endTime, selectedPackage, selectedPayment } = req.body;
 
   try {
     const booking = new Booking({
@@ -120,6 +121,8 @@ app.post('/api/reserve', async (req, res) => {
       reservedDate,
       startTime,
       endTime,
+      selectedPackage,
+      selectedPayment,
     });
 
     await booking.save();
@@ -127,6 +130,34 @@ app.post('/api/reserve', async (req, res) => {
   } catch (error) {
     console.error('Error reserving table:', error);
     res.status(500).send('Error reserving table');
+  }
+});
+
+app.get('/api/bookings', async (req, res) => {
+  const { user } = req.query;
+
+  try {
+    const bookings = await Booking.find({ user });
+    res.json(bookings);
+  } catch (error) {
+    console.error('Error fetching bookings:', error);
+    res.status(500).send('Error fetching bookings');
+  }
+});
+
+app.delete('/api/bookings/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const result = await Booking.deleteOne({ _id: id });
+    if (result.deletedCount === 1) {
+      res.status(200).send('Booking deleted successfully');
+    } else {
+      res.status(404).send('Booking not found');
+    }
+  } catch (error) {
+    console.error('Error deleting booking:', error);
+    res.status(500).send('Error deleting booking');
   }
 });
 

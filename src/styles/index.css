@@ -104,3 +104,8 @@ body.modal-open {
   opacity: 0.01;
   transition: opacity 300ms ease-in-out;
 }
+
+.wide-modal {
+  width: 30rem;
+  max-width: 90vw; /* Ensure the modal doesn't exceed 90% of the viewport width */
+}
