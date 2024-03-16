@@ -106,6 +106,6 @@ body.modal-open {
 }
 
 .wide-modal {
-  width: 30rem;
+  width: 32rem;
   max-width: 90vw; /* Ensure the modal doesn't exceed 90% of the viewport width */
 }

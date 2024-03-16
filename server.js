@@ -1,5 +1,5 @@
 import express, { json } from 'express';
-import mongoose from 'mongoose';
+import mongoose, { model } from 'mongoose';
 import cors from 'cors';
 const app = express();
 
@@ -29,6 +29,7 @@ const userSchema = new mongoose.Schema({
   gender: String,
 });
 
+// Create user model
 const User = mongoose.model('User', userSchema);
 
 app.get('/api/checkRegistration/:userId', async (req, res) => {
@@ -41,6 +42,7 @@ app.get('/api/checkRegistration/:userId', async (req, res) => {
   }
 });
 
+// Save user profile, sends user gender and username to database
 app.post('/api/saveProfile', async (req, res) => {
   const userProfile = req.body;
 
@@ -54,6 +56,7 @@ app.post('/api/saveProfile', async (req, res) => {
   }
 });
 
+// Get username from database to display on profile page
 app.post("/api/getUsername", async (req, res) => {
   const { userId } = req.body;
 
@@ -83,7 +86,7 @@ const bookingSchema = new mongoose.Schema({
 
 const Booking = mongoose.model('Booking', bookingSchema);
 
-// For table checking reservations
+// For table checking reservations, the website runs this everytime it loads, or user selects a new date and time
 app.get('/api/reservations', async (req, res) => {
   console.log('Received request for reservations:', req.query);
   const { tableNumber, reservedDate, startTime, endTime } = req.query;
@@ -111,6 +114,7 @@ app.get('/api/reservations', async (req, res) => {
   }
 });
 
+// For making a reservation, when the user reserve a table, the website sends a POST request to this endpoint
 app.post('/api/reserve', async (req, res) => {
   const { tableNumber, user, reservedDate, startTime, endTime, selectedPackage, selectedPayment } = req.body;
 
@@ -133,6 +137,7 @@ app.post('/api/reserve', async (req, res) => {
   }
 });
 
+// The website sends a GET request to this endpoint, and the server returns the user's reservations from database to display in the Manage Bookings modal
 app.get('/api/bookings', async (req, res) => {
   const { user } = req.query;
 
