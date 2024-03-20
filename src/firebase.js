@@ -1,7 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { getAuth, setPersistence, browserSessionPersistence } from "firebase/auth";
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -14,12 +13,11 @@ const firebaseConfig = {
   storageBucket: "foodcat-hotpot.appspot.com",
   messagingSenderId: "958306347362",
   appId: "1:958306347362:web:7eb826715d3d7fbadb643b",
-  measurementId: "G-LW3F18S3MJ"
+  measurementId: "G-LW3F18S3MJ" 
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 const auth = getAuth(app);
 
 setPersistence(auth, browserSessionPersistence)

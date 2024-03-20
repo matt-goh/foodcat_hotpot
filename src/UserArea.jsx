@@ -19,6 +19,7 @@ const UserArea = ({ checkAllTablesReservation, selectedDateTime }) => {
     signOut(auth)
       .then(() => {
         console.log("Sign-out successful!");
+        window.sessionStorage.clear();
       })
       .catch((error) => {
         console.log("Error signing out: ", error);

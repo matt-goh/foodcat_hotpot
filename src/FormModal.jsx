@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { setUsername } from "./actions";
 import Modal from "react-modal";
@@ -25,7 +25,7 @@ const FormModal = ({ isOpen, onClose }) => {
   const [selectedGender, setSelectedGender] = useState(null);
   const [isSaveButtonDisabled, setIsSaveButtonDisabled] = useState(false);
   const [userIsSignedIn] = useAuthState(auth);
-  const username = useSelector((state) => state.user.username);
+  const [usernameBuffer, setUsernameBuffer] = useState("");
   const dispatch = useDispatch();
 
   const checkIsRegistered = async () => {
@@ -50,7 +50,7 @@ const FormModal = ({ isOpen, onClose }) => {
       const result = await signInWithPopup(auth, provider);
       setSignInMethod("Google");
       setEmail(result.user.email);
-      dispatch(setUsername(result.user.displayName));
+      setUsernameBuffer(result.user.displayName);
       checkIsRegistered();
     } catch (e) {
       console.error("Google Sign-In Error:", e);
@@ -97,7 +97,7 @@ const FormModal = ({ isOpen, onClose }) => {
   };
 
   const handleUsernameChange = (event) => {
-    dispatch(setUsername(event.target.value));
+    setUsernameBuffer(event.target.value);
   };
 
   const handlePhoneNumberChange = (event) => {
@@ -111,7 +111,7 @@ const FormModal = ({ isOpen, onClose }) => {
         signInMethod: signInMethod,
         email: email,
         phoneNumber: phoneNumber,
-        username: username,
+        username: usernameBuffer,
         gender: document.getElementById("maleRadio").checked
           ? "Male"
           : "Female",
@@ -130,7 +130,7 @@ const FormModal = ({ isOpen, onClose }) => {
       }
       onClose();
 
-      dispatch(setUsername(username));
+      dispatch(setUsername(usernameBuffer));
     } catch (error) {
       console.error("Error saving user profile:", error);
     }
@@ -340,8 +340,8 @@ const FormModal = ({ isOpen, onClose }) => {
                 id="username"
                 type="username"
                 placeholder="Username"
-                value={username}
-                onChange={handleUsernameChange}
+                value={usernameBuffer}
+                onInput={handleUsernameChange}
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-1 focus:ring-inset focus:ring-gray-300"
               />
             </div>
