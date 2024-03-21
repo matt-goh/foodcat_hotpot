@@ -131,7 +131,7 @@ const BookingModal = ({
                         onClick={() => handleDeleteBooking(booking._id)}
                         className="bg-red-500 text-white px-4 py-2 rounded ml-2 hover:bg-red-700 focus:outline-none focus:shadow-outline transition-opacity duration-300"
                       >
-                        Delete
+                        Cancel
                       </button>
                     )}
                     {showConfirmation && selectedBookingId === booking._id && (
@@ -139,13 +139,13 @@ const BookingModal = ({
                         <p className="pb-1 font-medium">Confirm?</p>
                         <button
                           onClick={confirmDelete}
-                          className="bg-red-500 text-white px-4 py-1.5 rounded-xl ml-2 hover:bg-red-700 focus:outline-none focus:shadow-outline transition-opacity duration-300"
+                          className="bg-red-500 text-white px-4 py-1.5 rounded-2xl ml-2 hover:bg-red-700 focus:outline-none focus:shadow-outline transition-opacity duration-300"
                         >
                           Yes
                         </button>
                         <button
                           onClick={cancelDelete}
-                          className="bg-green-500 text-white px-4 py-1.5 rounded-xl ml-2 hover:bg-green-700 focus:outline-none focus:shadow-outline transition-opacity duration-300"
+                          className="bg-green-500 text-white px-4 py-1.5 rounded-2xl ml-2 hover:bg-green-700 focus:outline-none focus:shadow-outline transition-opacity duration-300"
                         >
                           No
                         </button>
