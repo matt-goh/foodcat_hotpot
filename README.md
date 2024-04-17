@@ -1,10 +1,10 @@
 <b><ins>Preview:</ins></b>
 
 **Home Page**<br><br>
-<img src="https://github.com/matt-goh/foodcat_hotpot/assets/81803417/4cb0a961-b3f6-49a3-8166-d5489b3b1203" width="1200" height="500"/>
+<img src="https://github.com/matt-goh/foodcat_hotpot/assets/81803417/4cb0a961-b3f6-49a3-8166-d5489b3b1203" width="1200" height="450"/>
 
 **Login Form**<br><br>
-<img src="https://github.com/matt-goh/foodcat_hotpot/assets/81803417/a056d1dd-c3d0-4fc7-ba21-d745a8def00b" width="1200" height="500"/>
+<img src="https://github.com/matt-goh/foodcat_hotpot/assets/81803417/a056d1dd-c3d0-4fc7-ba21-d745a8def00b" width="1200" height="450"/>
 <img src="https://github.com/matt-goh/foodcat_hotpot/assets/81803417/698d7395-bd7d-47ed-b6e0-41efff9ad52b" width="360" height="480"/>
 
 **Profile Form**                   **Profile Button**<br><br>
@@ -20,9 +20,9 @@
 
 **Reservation**<br><br>
 <img src="https://github.com/matt-goh/foodcat_hotpot/assets/81803417/9fd73b50-c766-41e0-a026-3fed257f67be" width="320" height="260"/>
-<img src="https://github.com/matt-goh/foodcat_hotpot/assets/81803417/68e04b67-13e1-41e8-ac09-f6c04955d5c8" width="1200" height="500"/>
+<img src="https://github.com/matt-goh/foodcat_hotpot/assets/81803417/68e04b67-13e1-41e8-ac09-f6c04955d5c8" width="1200" height="450"/>
 
 **Manage bookings**<br><br>
-<img src="https://github.com/matt-goh/foodcat_hotpot/assets/81803417/3af3a6c3-752a-44b5-adba-2962884ace49" width="1200" height="500"/>
+<img src="https://github.com/matt-goh/foodcat_hotpot/assets/81803417/3af3a6c3-752a-44b5-adba-2962884ace49" width="1200" height="450"/>
 <img src="https://github.com/matt-goh/foodcat_hotpot/assets/81803417/7dcd8a3b-e674-4b21-b976-a43abc9c0d07" width="380" height="400"/>
 <img src="https://github.com/matt-goh/foodcat_hotpot/assets/81803417/e7396d03-91c0-48df-bcc8-a6d8abd142b7" width="420" height="400"/>
